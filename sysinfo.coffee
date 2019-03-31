@@ -99,15 +99,15 @@ module.exports = (env) ->
             'cpu', 'usedMemory', 'usedMemoryPercent',
             'freeMemory', 'freeMemoryPercent', 'processes',
             'temperature', 'temperatureF', 'dbSize', 'diskUsagePercent',
-            'systemUptime', 'wifiSignalLevel',
+            'systemUptime', 'systemUptimeDHM', 'wifiSignalLevel',
             'nwThroughputReceived', 'nwThroughputSent',
             'pimaticRss', 'pimaticHeapUsed',
-            'pimaticHeapTotal', 'pimaticUptime',
+            'pimaticHeapTotal', 'pimaticUptime', 'pimaticUptimeDHM',
           ]
 
           @attributes[name] = {
             description: name
-            type: "number"
+            type: if name is 'systemUptimeDHM' or 'pimaticUptimeDHM' then 'string' else 'number'
           }
 
           switch name
@@ -221,9 +221,38 @@ module.exports = (env) ->
               getter = ( => Promise.resolve(os.uptime()) )
               @attributes[name].unit = 's'
               @attributes[name].acronym = 'OS UP'
+            when "systemUptimeDHM"
+              os = env.require 'os'
+              getter = ( =>
+                seconds = os.uptime()
+                numdays = Math.floor(seconds / 86400)
+                numhours = Math.floor(seconds % 86400 / 3600)
+                numminutes = Math.floor(seconds % 86400 % 3600 / 60)
+                if numdays == 0 && numhours == 0
+                  return numminutes.toString() + ' minutes'
+                else if  numdays == 0
+                  return numhours.toString() + ' hours, ' + numminutes.toString() + ' minutes'
+                else
+                  return numdays.toString() + ' days, ' + numhours.toString() + ' hours, ' + numminutes.toString() + ' minutes'
+              )
+              @attributes[name].acronym = 'OS UP'
             when "pimaticUptime"
               getter = ( => Promise.resolve(process.uptime()) )
               @attributes[name].unit = 's'
+              @attributes[name].acronym = 'PROC UP'
+            when "pimaticUptimeDHM"
+              getter = ( =>
+                seconds = process.uptime()
+                numdays = Math.floor(seconds / 86400)
+                numhours = Math.floor(seconds % 86400 / 3600)
+                numminutes = Math.floor(seconds % 86400 % 3600 / 60)
+                if numdays == 0 && numhours == 0
+                  return numminutes.toString() + ' minutes'
+                else if  numdays == 0
+                  return numhours.toString() + ' hours, ' + numminutes.toString() + ' minutes'
+                else
+                  return numdays.toString() + ' days, ' + numhours.toString() + ' hours, ' + numminutes.toString() + ' minutes'
+              )
               @attributes[name].acronym = 'PROC UP'
             when "wifiSignalLevel"
               networkInterface = attr.networkInterface or 'wlan0'

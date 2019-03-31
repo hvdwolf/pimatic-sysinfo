@@ -21,6 +21,7 @@ The plugin is based on the
 * System temperature (Celsius ℃): `"temperature"`
 * System temperature (Fahrenheit ℉): `"temperatureF"`
 * System uptime in seconds: `"systemUptime"`
+* System uptime in Days Hours Minutes: `"systemUptimeDHM"`
 * WiFi received signal level (dBm): `wifiSignalLevel` 
 * Network interface throughput received (bps): `nwThroughputReceived` 
 * Network interface throughput sent (bps): `nwThroughputSent` 
@@ -29,6 +30,7 @@ The plugin is based on the
 * Pimatic process used heap memory (bytes): `"pimaticHeapUsed"`
 * Pimatic process total heap memory (bytes): `"pimaticHeapTotal"`
 * Pimatic process uptime (seconds): `"pimaticUptime"`
+* Pimatic process uptime (Days Hours Minutes): `"pimaticUptimeDHM"`
 
 Notes:
 * Database size is only applicable if builtin SQLite database
